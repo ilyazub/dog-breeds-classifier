@@ -13,7 +13,7 @@ from fastai.vision import (
 from torch import device
 
 defaults.device = device('cpu')
-api = API()
+app = API()
 
 export_file_url = 'https://drive.google.com/uc?id=1n8L9ZEaSJgfbQs9Vb9cUrHLHhFVTQiQI&export=download'
 export_file_name = 'export.pkl'
@@ -61,20 +61,20 @@ def predict_image_from_bytes(bytes):
         )
     }
 
-@api.route("/upload")
+@app.route("/upload")
 async def upload(request, response):
     data = await request.form()
     bytes = await (data["file"].read())
     response.media = predict_image_from_bytes(bytes)
 
 
-@api.route("/classify-url")
+@app.route("/classify-url")
 async def classify_url(request, response):
     bytes = await get_bytes(request.params["url"])
     response.media = predict_image_from_bytes(bytes)
 
 
-@api.route("/")
+@app.route("/")
 def form(req, resp):
     resp.html = """
         <form action="/upload" method="post" enctype="multipart/form-data">
@@ -91,4 +91,4 @@ def form(req, resp):
 
 
 if __name__ == '__main__':
-    api.run()
+    app.run()
